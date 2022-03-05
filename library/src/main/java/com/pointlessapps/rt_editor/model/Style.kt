@@ -25,7 +25,6 @@ interface Style {
 		fraction: Float = DEFAULT_VALUE
 	) : Style {
 
-		@FloatRange(from = MIN_VALUE, to = MAX_VALUE)
 		var fraction: Float? = fraction.coerceIn(
 			minimumValue = MIN_VALUE.toFloat(),
 			maximumValue = MAX_VALUE.toFloat()
