@@ -93,6 +93,12 @@ internal class AnnotatedStringBuilder {
 				style.end = prevStart
 
 				updated = true
+			} else if (prevStart < style.start && prevEnd <= style.start) {
+				// Example: |som|e *Long* text
+				style.start -= prevEnd - prevStart
+				style.end -= prevEnd - prevStart
+
+				updated = true
 			}
 
 			if (style.end <= style.start) {
