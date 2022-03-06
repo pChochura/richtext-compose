@@ -7,6 +7,8 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import com.pointlessapps.rt_editor.mappers.StyleMapper
 import com.pointlessapps.rt_editor.model.Style.ClearFormat
 import com.pointlessapps.rt_editor.utils.*
+import kotlin.math.max
+import kotlin.math.min
 
 internal typealias StyleRange<T> = AnnotatedStringBuilder.MutableRange<T>
 
@@ -190,24 +192,34 @@ internal class RichTextValueImpl(private val styleMapper: StyleMapper) : RichTex
 		val (spansToAdd, spansToRemove) = removeStyleFromSelection(
 			getCurrentSpanStyles(style.takeUnless { it == ClearFormat })
 		)
-		val (paragraphsToAdd, paragraphsToRemove) = removeStyleFromSelection(
-			getCurrentParagraphStyles(style.takeUnless { it == ClearFormat })
+		val (_, paragraphsToRemove) = removeStyleFromSelection(
+			getCurrentParagraphStyles(style.takeUnless {
+				it == ClearFormat || it is Style.ParagraphStyle
+			}), // Always remove all paragraphs; they cannot overlap
+			currentSelection.coerceParagraph(annotatedStringBuilder.text) // Select whole paragraph
 		)
 
 		val changedStyles = spansToAdd.isNotEmpty() || spansToRemove.isNotEmpty() ||
-				paragraphsToAdd.isNotEmpty() || paragraphsToRemove.isNotEmpty()
+				paragraphsToRemove.isNotEmpty()
 
 		if (changedStyles) {
 			updateHistory()
 
 			annotatedStringBuilder.addSpans(*spansToAdd.toTypedArray())
 			annotatedStringBuilder.removeSpans(*spansToRemove.toTypedArray())
-			annotatedStringBuilder.addParagraphs(*paragraphsToAdd.toTypedArray())
-			annotatedStringBuilder.removeParagraphs(*paragraphsToRemove.toTypedArray())
+
+			if (paragraphsToRemove.isNotEmpty()) {
+				annotatedStringBuilder.removeParagraphs(*paragraphsToRemove.toTypedArray())
+			}
 
 			updateHistory()
 
-			return this
+			if (paragraphsToRemove.isEmpty() || paragraphsToRemove.any {
+					it.tag == styleMapper.toTag(style)
+				}
+			) {
+				return this
+			}
 		} else if (style == ClearFormat || (composition == null && selection.collapsed)) {
 			return this
 		}
@@ -224,10 +236,21 @@ internal class RichTextValueImpl(private val styleMapper: StyleMapper) : RichTex
 		}
 
 		val paragraphStyle = styleMapper.toParagraphStyle(style)?.let {
+			var startOfTheParagraph = currentSelection.start
+				.coerceStartOfParagraph(annotatedStringBuilder.text)
+			var endOfTheParagraph = currentSelection.end
+				.coerceEndOfParagraph(annotatedStringBuilder.text)
+
+			val removedParagraph = paragraphsToRemove.singleOrNull()
+			if (removedParagraph != null) {
+				startOfTheParagraph = min(removedParagraph.start, startOfTheParagraph)
+				endOfTheParagraph = max(removedParagraph.end, endOfTheParagraph)
+			}
+
 			StyleRange(
 				item = it,
-				start = currentSelection.start.coerceStartOfParagraph(annotatedStringBuilder.text),
-				end = currentSelection.end.coerceEndOfParagraph(annotatedStringBuilder.text),
+				start = startOfTheParagraph,
+				end = endOfTheParagraph,
 				tag = styleMapper.toTag(style)
 			)
 		}

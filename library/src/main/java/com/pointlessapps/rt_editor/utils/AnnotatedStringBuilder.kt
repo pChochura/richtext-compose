@@ -162,7 +162,7 @@ internal class AnnotatedStringBuilder {
 	fun toAnnotatedString() = AnnotatedString(
 		text = text,
 		spanStyles = spanStyles.map { it.toRange() },
-		paragraphStyles = paragraphStyles.map { it.toRange() }
+		paragraphStyles = paragraphStyles.map { it.toRange() }.sortedBy { it.end }
 	)
 
 	fun update(annotatedStringBuilder: AnnotatedStringBuilder) {

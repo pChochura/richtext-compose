@@ -9,7 +9,7 @@ fun RichTextEditor(
 	value: RichTextValue,
 	onValueChange: (RichTextValue) -> Unit,
 	modifier: Modifier = Modifier,
-	textFieldModel: RTTextFieldModel = defaultRTTextFieldModel()
+	textFieldStyle: RichTextFieldStyle = defaultRichTextFieldStyle()
 ) {
 	RichTextField(
 		modifier = modifier,
@@ -21,6 +21,6 @@ fun RichTextEditor(
 				onValueChange(newValue)
 			}
 		},
-		textFieldModel = textFieldModel
+		textFieldStyle = textFieldStyle
 	)
 }

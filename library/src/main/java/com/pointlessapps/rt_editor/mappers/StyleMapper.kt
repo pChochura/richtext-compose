@@ -5,19 +5,17 @@ import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import com.pointlessapps.rt_editor.model.Style
-import kotlin.reflect.full.superclasses
 
 @OptIn(ExperimentalUnitApi::class)
 open class StyleMapper {
 
 	open fun fromTag(tag: String): Style {
-
-		println("LOG!, tag: $tag")
 		val klass = requireNotNull(Style::class.nestedClasses.find {
 			tag.startsWith("${it.simpleName}/")
 		})
@@ -65,9 +63,9 @@ open class StyleMapper {
 	}
 
 	open fun toParagraphStyle(style: Style): ParagraphStyle? = when (style) {
-		Style.AlignLeft -> TODO()
-		Style.AlignCenter -> TODO()
-		Style.AlignRight -> TODO()
+		Style.AlignLeft -> ParagraphStyle(textAlign = TextAlign.Left)
+		Style.AlignCenter -> ParagraphStyle(textAlign = TextAlign.Center)
+		Style.AlignRight -> ParagraphStyle(textAlign = TextAlign.Right)
 		Style.UnorderedList -> TODO()
 		Style.OrderedList -> TODO()
 		else -> null

@@ -31,11 +31,16 @@ internal fun Int.coerceEndOfParagraph(text: String): Int {
 		.indexOf(System.lineSeparator())
 
 	if (nextNewLineCharacterIndex == -1) {
-		return text.lastIndex
+		return text.length
 	}
 
-	return this + nextNewLineCharacterIndex - System.lineSeparator().length + 1
+	return this + nextNewLineCharacterIndex + 1
 }
+
+internal fun TextRange.coerceParagraph(text: String) = TextRange(
+	start = start.coerceStartOfParagraph(text),
+	end = end.coerceEndOfParagraph(text)
+)
 
 internal fun TextRange.coerceNotReversed() = if (start < end) {
 	this

@@ -24,7 +24,7 @@ import com.pointlessapps.rt_editor.mappers.StyleMapper
 import com.pointlessapps.rt_editor.model.RichTextValue
 import com.pointlessapps.rt_editor.model.Style
 import com.pointlessapps.rt_editor.ui.RichTextEditor
-import com.pointlessapps.rt_editor.ui.defaultRTTextFieldModel
+import com.pointlessapps.rt_editor.ui.defaultRichTextFieldStyle
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
 						.padding(16.dp),
 					value = value,
 					onValueChange = { value = it },
-					textFieldModel = defaultRTTextFieldModel().copy(
+					textFieldStyle = defaultRichTextFieldStyle().copy(
 						textColor = Color.Black,
 						placeholderColor = Color.LightGray,
 						placeholder = "My rich text editor in action"
@@ -110,6 +110,24 @@ class MainActivity : ComponentActivity() {
 							active = value.currentStyles.contains(Style.Strikethrough)
 						) {
 							value = value.insertStyle(Style.Strikethrough)
+						}
+						EditorAction(
+							iconRes = R.drawable.icon_align_left,
+							active = value.currentStyles.contains(Style.AlignLeft)
+						) {
+							value = value.insertStyle(Style.AlignLeft)
+						}
+						EditorAction(
+							iconRes = R.drawable.icon_align_center,
+							active = value.currentStyles.contains(Style.AlignCenter)
+						) {
+							value = value.insertStyle(Style.AlignCenter)
+						}
+						EditorAction(
+							iconRes = R.drawable.icon_align_right,
+							active = value.currentStyles.contains(Style.AlignRight)
+						) {
+							value = value.insertStyle(Style.AlignRight)
 						}
 						EditorAction(
 							iconRes = R.drawable.icon_text_size,

@@ -25,15 +25,15 @@ internal fun RichTextField(
 	styledValue: AnnotatedString,
 	onValueChange: (TextFieldValue) -> Unit,
 	modifier: Modifier = Modifier,
-	textFieldModel: RTTextFieldModel = defaultRTTextFieldModel()
+	textFieldStyle: RichTextFieldStyle = defaultRichTextFieldStyle()
 ) {
 	Box(modifier = modifier) {
 		if (value.text.isEmpty()) {
 			Text(
 				modifier = Modifier.fillMaxSize(),
-				text = textFieldModel.placeholder,
-				style = textFieldModel.textStyle.copy(
-					color = textFieldModel.placeholderColor
+				text = textFieldStyle.placeholder,
+				style = textFieldStyle.textStyle.copy(
+					color = textFieldStyle.placeholderColor
 				)
 			)
 		}
@@ -41,18 +41,18 @@ internal fun RichTextField(
 			modifier = Modifier.fillMaxSize(),
 			value = value,
 			onValueChange = onValueChange,
-			keyboardOptions = textFieldModel.keyboardOptions,
+			keyboardOptions = textFieldStyle.keyboardOptions,
 			visualTransformation = { TransformedText(styledValue, OffsetMapping.Identity) },
-			textStyle = textFieldModel.textStyle.copy(
-				textFieldModel.textColor
+			textStyle = textFieldStyle.textStyle.copy(
+				textFieldStyle.textColor
 			),
-			cursorBrush = SolidColor(textFieldModel.cursorColor)
+			cursorBrush = SolidColor(textFieldStyle.cursorColor)
 		)
 	}
 }
 
 @Composable
-fun defaultRTTextFieldModel() = RTTextFieldModel(
+fun defaultRichTextFieldStyle() = RichTextFieldStyle(
 	keyboardOptions = KeyboardOptions(
 		capitalization = KeyboardCapitalization.Sentences,
 	),
@@ -63,7 +63,7 @@ fun defaultRTTextFieldModel() = RTTextFieldModel(
 	cursorColor = MaterialTheme.colors.secondary,
 )
 
-data class RTTextFieldModel(
+data class RichTextFieldStyle(
 	val keyboardOptions: KeyboardOptions,
 	val placeholder: String,
 	val textStyle: TextStyle,
