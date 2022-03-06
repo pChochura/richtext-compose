@@ -48,7 +48,8 @@ internal class AnnotatedStringBuilder {
 	fun updateStyles(
 		previousSelection: TextRange,
 		currentValue: String,
-		onCollapsedParagraphsCallback: () -> Unit
+		onCollapsedParagraphsCallback: () -> Unit,
+		onEscapeParagraphCallback: (String) -> Unit
 	): Boolean {
 		val lengthDifference = currentValue.length - text.length
 		if (lengthDifference == 0) {
@@ -58,22 +59,41 @@ internal class AnnotatedStringBuilder {
 
 		val updatedSpans = updateStyles(_spanStyles, previousSelection, lengthDifference)
 
-		val currentParagraph = _paragraphStyles.find { it.start == previousSelection.end }
-		val previousParagraph = _paragraphStyles.find { it.end == previousSelection.end }
+		val currentStartingParagraph = _paragraphStyles.find { it.start == previousSelection.end }
+		val currentEndingParagraph = _paragraphStyles.find { it.end == previousSelection.end }
+		val previousEndingParagraph = _paragraphStyles.find { it.end == previousSelection.end }
 
 		// A user deleted a newline character and tried to merge two paragraphs
-		val updatedParagraphs = if (
+		val updatedParagraphs = when {
 			previousSelection.collapsed && lengthDifference == -1 &&
-			currentParagraph != null && previousParagraph != null
-		) {
-			// Collapse current paragraph
-			_paragraphStyles.remove(currentParagraph)
-			previousParagraph.end = currentParagraph.end
-			onCollapsedParagraphsCallback()
+					currentStartingParagraph != null && previousEndingParagraph != null -> {
+				// Collapse current paragraph
+				_paragraphStyles.remove(currentStartingParagraph)
+				previousEndingParagraph.end = currentStartingParagraph.end
+				onCollapsedParagraphsCallback()
 
-			true
-		} else {
-			updateStyles(_paragraphStyles, previousSelection, lengthDifference)
+				true
+			}
+			previousSelection.collapsed && lengthDifference == 1 && currentEndingParagraph != null &&
+					currentValue.substring(
+						currentEndingParagraph.start,
+						currentEndingParagraph.end + 1
+					).endsWith(System.lineSeparator().repeat(2)) -> {
+				currentEndingParagraph.end -= 1
+
+				onEscapeParagraphCallback(
+					currentValue.substring(0, currentEndingParagraph.start) +
+							currentValue.substring(
+								currentEndingParagraph.start,
+								currentEndingParagraph.end + 1
+							) + currentValue.substring(
+						currentEndingParagraph.end + 2
+					)
+				)
+
+				true
+			}
+			else -> updateStyles(_paragraphStyles, previousSelection, lengthDifference)
 		}
 
 		return updatedSpans || updatedParagraphs
@@ -150,6 +170,12 @@ internal class AnnotatedStringBuilder {
 
 			var start = range.start
 			var end = range.end
+
+			if (end <= start) {
+				removedIndexes.add(index)
+				return@forEachIndexed
+			}
+
 			if (startRangeMap.containsKey(range.end)) {
 				val otherRangeIndex = requireNotNull(startRangeMap[range.end])
 				if (styles[otherRangeIndex].tag == range.tag) {
@@ -179,6 +205,28 @@ internal class AnnotatedStringBuilder {
 		}
 
 		removedIndexes.reversed().forEach { styles.removeAt(it) }
+	}
+
+	fun splitStyles(position: Int) {
+		val spansToAdd = mutableListOf<MutableRange<SpanStyle>>()
+		_spanStyles.forEach {
+			if (position in it.start..it.end) {
+				spansToAdd.add(it.copy(start = position))
+				it.end = position - 1
+			}
+		}
+		_spanStyles.addAll(spansToAdd)
+		collapseStyles(_spanStyles)
+
+		val paragraphsToAdd = mutableListOf<MutableRange<ParagraphStyle>>()
+		_paragraphStyles.forEach {
+			if (position in it.start..it.end) {
+				paragraphsToAdd.add(it.copy(start = position))
+				it.end = position - 1
+			}
+		}
+		_paragraphStyles.addAll(paragraphsToAdd)
+		collapseStyles(_paragraphStyles)
 	}
 
 	fun toAnnotatedString() = AnnotatedString(

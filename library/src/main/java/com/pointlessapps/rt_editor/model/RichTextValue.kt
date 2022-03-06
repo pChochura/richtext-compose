@@ -189,6 +189,14 @@ internal class RichTextValueImpl(private val styleMapper: StyleMapper) : RichTex
 	}
 
 	private fun insertStyleInternal(style: Style): RichTextValue {
+		if (currentSelection.collapsed && style == ClearFormat) {
+			updateHistoryIfNecessary()
+			annotatedStringBuilder.splitStyles(currentSelection.end)
+			updateHistory()
+
+			return this
+		}
+
 		val (spansToAdd, spansToRemove) = removeStyleFromSelection(
 			getCurrentSpanStyles(style.takeUnless { it == ClearFormat })
 		)
@@ -203,7 +211,7 @@ internal class RichTextValueImpl(private val styleMapper: StyleMapper) : RichTex
 				paragraphsToRemove.isNotEmpty()
 
 		if (changedStyles) {
-			updateHistory()
+			updateHistoryIfNecessary()
 
 			annotatedStringBuilder.addSpans(*spansToAdd.toTypedArray())
 			annotatedStringBuilder.removeSpans(*spansToRemove.toTypedArray())
@@ -304,7 +312,11 @@ internal class RichTextValueImpl(private val styleMapper: StyleMapper) : RichTex
 		val updatedStyles = annotatedStringBuilder.updateStyles(
 			previousSelection = selection,
 			currentValue = value.text,
-			onCollapsedParagraphsCallback = { updateText = false }
+			onCollapsedParagraphsCallback = { updateText = false },
+			onEscapeParagraphCallback = {
+				updateText = false
+				annotatedStringBuilder.text = it
+			}
 		)
 
 		if (updatedStyles || annotatedStringBuilder.text != value.text ||
