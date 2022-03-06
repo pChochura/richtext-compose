@@ -31,7 +31,6 @@ internal class AnnotatedStringBuilder {
 
 	fun addParagraphs(vararg paragraphStyle: MutableRange<ParagraphStyle>) {
 		_paragraphStyles.addAll(paragraphStyle)
-		collapseStyles(_paragraphStyles)
 	}
 
 	fun removeSpans(vararg spanStyle: MutableRange<SpanStyle>) {
@@ -46,15 +45,38 @@ internal class AnnotatedStringBuilder {
 		}
 	}
 
-	fun updateStyles(previousSelection: TextRange, currentValue: String): Boolean {
+	fun updateStyles(
+		previousSelection: TextRange,
+		currentValue: String,
+		onCollapsedParagraphsCallback: () -> Unit
+	): Boolean {
 		val lengthDifference = currentValue.length - text.length
 		if (lengthDifference == 0) {
 			// Text was not changed at all; leave styles untouched
 			return false
 		}
 
-		return updateStyles(_spanStyles, previousSelection, lengthDifference) ||
-				updateStyles(_paragraphStyles, previousSelection, lengthDifference)
+		val updatedSpans = updateStyles(_spanStyles, previousSelection, lengthDifference)
+
+		val currentParagraph = _paragraphStyles.find { it.start == previousSelection.end }
+		val previousParagraph = _paragraphStyles.find { it.end == previousSelection.end }
+
+		// A user deleted a newline character and tried to merge two paragraphs
+		val updatedParagraphs = if (
+			previousSelection.collapsed && lengthDifference == -1 &&
+			currentParagraph != null && previousParagraph != null
+		) {
+			// Collapse current paragraph
+			_paragraphStyles.remove(currentParagraph)
+			previousParagraph.end = currentParagraph.end
+			onCollapsedParagraphsCallback()
+
+			true
+		} else {
+			updateStyles(_paragraphStyles, previousSelection, lengthDifference)
+		}
+
+		return updatedSpans || updatedParagraphs
 	}
 
 	private fun <T> updateStyles(
@@ -68,8 +90,8 @@ internal class AnnotatedStringBuilder {
 		val prevStart = previousSelection.min
 		val prevEnd = previousSelection.max
 		styles.forEachIndexed { index, style ->
-			val updateStart = style.start > prevEnd
-			val updateEnd = style.end >= prevEnd
+			val updateStart = prevEnd <= style.start
+			val updateEnd = prevEnd <= style.end
 
 			if (previousSelection.collapsed && (updateStart || updateEnd)) {
 				if (updateStart) style.start += lengthDifference

@@ -7,23 +7,26 @@ interface Style {
 
 	object ClearFormat : Style
 
-	object OrderedList : Style
-	object UnorderedList : Style
-	object AlignLeft : Style
-	object AlignCenter : Style
-	object AlignRight : Style
+	interface TextStyle : Style
+	interface ParagraphStyle : Style
 
-	object Bold : Style
-	object Underline : Style
-	object Italic : Style
-	object Strikethrough : Style
+	object OrderedList : ParagraphStyle
+	object UnorderedList : ParagraphStyle
+	object AlignLeft : ParagraphStyle
+	object AlignCenter : ParagraphStyle
+	object AlignRight : ParagraphStyle
 
-	class TextColor(val color: Color? = null) : Style
+	object Bold : TextStyle
+	object Underline : TextStyle
+	object Italic : TextStyle
+	object Strikethrough : TextStyle
+
+	class TextColor(val color: Color? = null) : TextStyle
 
 	class TextSize(
 		@FloatRange(from = MIN_VALUE, to = MAX_VALUE)
 		fraction: Float = DEFAULT_VALUE
-	) : Style {
+	) : TextStyle {
 
 		var fraction: Float? = fraction.coerceIn(
 			minimumValue = MIN_VALUE.toFloat(),

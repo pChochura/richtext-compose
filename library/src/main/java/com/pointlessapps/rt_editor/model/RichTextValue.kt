@@ -300,17 +300,21 @@ internal class RichTextValueImpl(private val styleMapper: StyleMapper) : RichTex
 	override fun redo() = this.copy().redoInternal()
 
 	override fun updatedValueAndStyles(value: TextFieldValue): Boolean {
+		var updateText = true
 		val updatedStyles = annotatedStringBuilder.updateStyles(
 			previousSelection = selection,
-			currentValue = value.text
+			currentValue = value.text,
+			onCollapsedParagraphsCallback = { updateText = false }
 		)
 
 		if (updatedStyles || annotatedStringBuilder.text != value.text ||
 			selection != value.selection || composition != value.composition
 		) {
-			annotatedStringBuilder.text = value.text
-			selection = value.selection
-			composition = value.composition
+			if (updateText) {
+				annotatedStringBuilder.text = value.text
+				selection = value.selection
+				composition = value.composition
+			}
 
 			currentSnapshot?.run {
 				if (value.text.length - text.length >= MIN_LENGTH_DIFFERENCE) {
