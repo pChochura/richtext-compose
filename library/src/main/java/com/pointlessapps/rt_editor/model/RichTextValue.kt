@@ -14,9 +14,12 @@ internal typealias StyleRange<T> = AnnotatedStringBuilder.MutableRange<T>
 
 abstract class RichTextValue {
 
+	/**
+	 * Returns styles that are used inside the current selection (or composition)
+	 */
+	abstract val currentStyles: Set<Style>
 	abstract val isUndoAvailable: Boolean
 	abstract val isRedoAvailable: Boolean
-	abstract val currentStyles: Set<Style>
 	internal abstract val value: TextFieldValue
 	internal abstract val styledValue: AnnotatedString
 
