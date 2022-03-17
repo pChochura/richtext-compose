@@ -1,6 +1,6 @@
 # Jetpack Compose Rich Text Editor
 
-[![](https://jitpack.io/v/pChochura/Compose-Rich-Text-Editor.svg)](https://jitpack.io/#pChochura/Compose-Rich-Text-Editor)
+[![](https://jitpack.io/v/pChochura/richtext-compose.svg)](https://jitpack.io/#pChochura/richtext-compose)
 
 I've been looking for a library that is able to deliver an editable component which can render rich
 text in real time. The main issue with libraries I found was that they were using WebView and
@@ -22,7 +22,7 @@ repositories {
 2. Include link do the library (change the version to the current one)
 
 ```groovy
-implementation "com.github.pChochura:Compose-Rich-Text-Editor:$version"
+implementation "com.github.pChochura:richtext-compose:$version"
 ```
 
 # Usage
@@ -33,14 +33,14 @@ Insert function call to a Composable:
 var value by remember { mutableStateOf(RichTextValue.get()) }
 
 RichTextEditor(
-	modifier = Modifier,
-	value = value,
-	onValueChange = { value = it },
-	textFieldStyle = defaultRichTextFieldStyle().copy(
-		placeholder = "My rich text editor in action"
-				textColor = MaterialTheme . colors . onPrimary,
-		placeholderColor = MaterialTheme.colors.secondaryVariant,
-	)
+    modifier = Modifier,
+    value = value,
+    onValueChange = { value = it },
+    textFieldStyle = defaultRichTextFieldStyle().copy(
+        placeholder = "My rich text editor in action",
+        textColor = MaterialTheme.colors.onPrimary,
+        placeholderColor = MaterialTheme.colors.secondaryVariant,
+    )
 )
 ```
 
@@ -50,33 +50,33 @@ the `textFieldStyle`. Default ones are as follows:
 ```kotlin
 @Composable
 fun defaultRichTextFieldStyle() = RichTextFieldStyle(
-		keyboardOptions = KeyboardOptions(
-			capitalization = KeyboardCapitalization.Sentences,
-		),
-		placeholder = EMPTY_STRING,
-		textStyle = MaterialTheme.typography.body1,
-		textColor = MaterialTheme.colors.onPrimary,
-		placeholderColor = MaterialTheme.colors.secondaryVariant,
-		cursorColor = MaterialTheme.colors.secondary,
-	)
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Sentences,
+        ),
+        placeholder = EMPTY_STRING,
+        textStyle = MaterialTheme.typography.body1,
+        textColor = MaterialTheme.colors.onPrimary,
+        placeholderColor = MaterialTheme.colors.secondaryVariant,
+        cursorColor = MaterialTheme.colors.secondary,
+    )
 ```
 
 To insert or clear styles you can use methods provided by the `RichTextValue` object:
 
 ```kotlin
 abstract class RichTextValue {
-	/**
-	 * Returns styles that are used inside the current selection (or composition)
-	 */
-	abstract val currentStyles: Set<Style>
-	abstract val isUndoAvailable: Boolean
-	abstract val isRedoAvailable: Boolean
+    /**
+     * Returns styles that are used inside the current selection (or composition)
+     */
+    abstract val currentStyles: Set<Style>
+    abstract val isUndoAvailable: Boolean
+    abstract val isRedoAvailable: Boolean
 
-	abstract fun insertStyle(style: Style): RichTextValue
-	abstract fun clearStyles(vararg styles: Style): RichTextValue
+    abstract fun insertStyle(style: Style): RichTextValue
+    abstract fun clearStyles(vararg styles: Style): RichTextValue
 
-	abstract fun undo(): RichTextValue
-	abstract fun redo(): RichTextValue
+    abstract fun undo(): RichTextValue
+    abstract fun redo(): RichTextValue
 }
 ```
 
@@ -189,21 +189,21 @@ object CustomStyle : Style
 
 class CustomStyleMapper : StyleMapper() {
 
-	override fun fromTag(tag: String) =
-		runCatching { super.fromTag(tag) }.getOrNull() ?: when (tag) {
-			// It is necessary to ensure undo/redo actions work correctly
-			"${CustomStyle.javaClass.simpleName}/" -> CustomStyle
-			else -> throw IllegalArgumentException()
-		}
+    override fun fromTag(tag: String) =
+        runCatching { super.fromTag(tag) }.getOrNull() ?: when (tag) {
+            // It is necessary to ensure undo/redo actions work correctly
+            "${CustomStyle.javaClass.simpleName}/" -> CustomStyle
+            else -> throw IllegalArgumentException()
+        }
 
-	override fun toSpanStyle(style: Style) = super.toSpanStyle(style) ?: when (style) {
-		// Here we're customizing the behavior of the style
-		is CustomStyle -> SpanStyle(
-			color = Color.Red,
-			fontWeight = FontWeight.Bold,
-		)
-		else -> null
-	}
+    override fun toSpanStyle(style: Style) = super.toSpanStyle(style) ?: when (style) {
+        // Here we're customizing the behavior of the style
+        is CustomStyle -> SpanStyle(
+            color = Color.Red,
+            fontWeight = FontWeight.Bold,
+        )
+        else -> null
+    }
 }
 ```
 
@@ -212,10 +212,10 @@ the `RichTextValue` class:
 
 ```kotlin
 var value by remember {
-	mutableStateOf(
-		RichTextValue.get(
-			styleMapper = CustomStyleMapper()
-		)
-	)
+    mutableStateOf(
+        RichTextValue.get(
+            styleMapper = CustomStyleMapper()
+        )
+    )
 }
 ```
