@@ -350,6 +350,7 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
 		selection = this@RichTextValueImpl.selection
 		composition = this@RichTextValueImpl.composition
 		historyOffset = this@RichTextValueImpl.historyOffset
+		historySnapshots.clear()
 		historySnapshots.addAll(this@RichTextValueImpl.historySnapshots)
 	}
 }
