@@ -5,6 +5,8 @@ import androidx.compose.ui.text.AnnotatedString.Range
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
+import kotlin.math.max
+import kotlin.math.min
 
 internal class AnnotatedStringBuilder {
 
@@ -126,8 +128,8 @@ internal class AnnotatedStringBuilder {
 				updated = true
 			} else if (prevStart < style.start && prevEnd <= style.end && prevEnd > style.start) {
 				// Example: som|e *Tex|t*
-				style.start -= style.start - prevStart
-				style.end -= prevEnd - prevStart
+				style.start = max(0, style.start - (style.start - prevStart))
+				style.end = min(_text.length, style.end - (prevEnd - prevStart))
 
 				updated = true
 			} else if (prevStart >= style.start && prevStart < style.end && prevEnd > style.end) {
@@ -137,8 +139,8 @@ internal class AnnotatedStringBuilder {
 				updated = true
 			} else if (prevStart < style.start && prevEnd <= style.start) {
 				// Example: |som|e *Long* text
-				style.start -= prevEnd - prevStart
-				style.end -= prevEnd - prevStart
+				style.start = max(0, style.start - (prevEnd - prevStart))
+				style.end = min(_text.length, style.end - (prevEnd - prevStart))
 
 				updated = true
 			}
@@ -200,8 +202,8 @@ internal class AnnotatedStringBuilder {
 				}
 			}
 
-			range.start = start
-			range.end = end
+			range.start = max(0, start)
+			range.end = min(_text.length, end)
 		}
 
 		removedIndexes.reversed().forEach { styles.removeAt(it) }
@@ -254,5 +256,14 @@ internal class AnnotatedStringBuilder {
 		fun equalsStructurally(other: MutableRange<T>) =
 			item == other.item && tag == other.tag &&
 					start == other.start && end == other.end
+
+		companion object {
+			fun <T> fromRange(range: Range<T>) = MutableRange(
+				item = range.item,
+				start = range.start,
+				end = range.end,
+				tag = range.tag
+			)
+		}
 	}
 }

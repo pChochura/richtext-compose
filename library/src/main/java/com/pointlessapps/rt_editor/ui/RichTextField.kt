@@ -13,9 +13,11 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
+import com.pointlessapps.rt_editor.mappers.StyleMapper
+import com.pointlessapps.rt_editor.transformations.UnorderedListTransformation
+import com.pointlessapps.rt_editor.transformations.combinedTransformations
 
 private const val EMPTY_STRING = ""
 
@@ -23,6 +25,7 @@ private const val EMPTY_STRING = ""
 internal fun RichTextField(
 	value: TextFieldValue,
 	styledValue: AnnotatedString,
+	styleMapper: StyleMapper,
 	onValueChange: (TextFieldValue) -> Unit,
 	modifier: Modifier = Modifier,
 	textFieldStyle: RichTextFieldStyle = defaultRichTextFieldStyle()
@@ -42,7 +45,11 @@ internal fun RichTextField(
 			value = value,
 			onValueChange = onValueChange,
 			keyboardOptions = textFieldStyle.keyboardOptions,
-			visualTransformation = { TransformedText(styledValue, OffsetMapping.Identity) },
+			visualTransformation = combinedTransformations(
+				styledValue,
+				VisualTransformation.None,
+				UnorderedListTransformation(styleMapper)
+			),
 			textStyle = textFieldStyle.textStyle.copy(
 				textFieldStyle.textColor
 			),

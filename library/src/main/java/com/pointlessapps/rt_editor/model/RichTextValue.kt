@@ -22,6 +22,7 @@ abstract class RichTextValue {
 	abstract val isRedoAvailable: Boolean
 	internal abstract val value: TextFieldValue
 	internal abstract val styledValue: AnnotatedString
+	internal abstract val styleMapper: StyleMapper
 
 	abstract fun insertStyle(style: Style): RichTextValue
 	abstract fun clearStyles(vararg styles: Style): RichTextValue
@@ -43,8 +44,7 @@ abstract class RichTextValue {
 	}
 }
 
-@OptIn(ExperimentalUnitApi::class)
-internal class RichTextValueImpl(private val styleMapper: StyleMapper) : RichTextValue() {
+internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTextValue() {
 
 	private val annotatedStringBuilder = AnnotatedStringBuilder()
 	private var selection: TextRange = TextRange.Zero

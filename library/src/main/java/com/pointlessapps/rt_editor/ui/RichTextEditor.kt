@@ -15,6 +15,7 @@ fun RichTextEditor(
 		modifier = modifier,
 		value = value.value,
 		styledValue = value.styledValue,
+		styleMapper = value.styleMapper,
 		onValueChange = {
 			val newValue = value.copy()
 			if (newValue.updatedValueAndStyles(it)) {
