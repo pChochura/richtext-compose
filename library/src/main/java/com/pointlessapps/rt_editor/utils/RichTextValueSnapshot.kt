@@ -2,7 +2,10 @@ package com.pointlessapps.rt_editor.utils
 
 import com.pointlessapps.rt_editor.mappers.StyleMapper
 
-class RichTextValueSnapshot private constructor(
+/**
+ * A helper class that lets you serialize the [RichTextValue]
+ */
+class RichTextValueSnapshot(
     val text: String,
     val spanStyles: List<RichTextValueSpanSnapshot>,
     val paragraphStyles: List<RichTextValueSpanSnapshot>,

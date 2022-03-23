@@ -45,6 +45,13 @@ abstract class RichTextValue {
 
         fun get(styleMapper: StyleMapper = StyleMapper()): RichTextValue =
             RichTextValueImpl(styleMapper)
+
+        fun fromSnapshot(
+            snapshot: RichTextValueSnapshot,
+            styleMapper: StyleMapper = StyleMapper(),
+        ): RichTextValue = RichTextValueImpl(styleMapper).apply {
+            restoreFromSnapshot(snapshot)
+        }
     }
 }
 
@@ -120,11 +127,13 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
     }
 
     private fun restoreFromHistory() {
-        currentSnapshot?.run {
-            annotatedStringBuilder.update(toAnnotatedStringBuilder(styleMapper))
-            selection = TextRange(selectionPosition)
-            composition = null
-        }
+        currentSnapshot?.let(::restoreFromSnapshot)
+    }
+
+    fun restoreFromSnapshot(snapshot: RichTextValueSnapshot) {
+        annotatedStringBuilder.update(snapshot.toAnnotatedStringBuilder(styleMapper))
+        selection = TextRange(snapshot.selectionPosition)
+        composition = null
     }
 
     private fun <T> filterCurrentStyles(styles: List<StyleRange<T>>) = styles.filter {
