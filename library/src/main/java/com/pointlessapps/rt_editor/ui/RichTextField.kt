@@ -23,58 +23,58 @@ private const val EMPTY_STRING = ""
 
 @Composable
 internal fun RichTextField(
-	value: TextFieldValue,
-	styledValue: AnnotatedString,
-	styleMapper: StyleMapper,
-	onValueChange: (TextFieldValue) -> Unit,
-	modifier: Modifier = Modifier,
-	textFieldStyle: RichTextFieldStyle = defaultRichTextFieldStyle()
+    value: TextFieldValue,
+    styledValue: AnnotatedString,
+    styleMapper: StyleMapper,
+    onValueChange: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
+    textFieldStyle: RichTextFieldStyle = defaultRichTextFieldStyle()
 ) {
-	Box(modifier = modifier) {
-		if (value.text.isEmpty()) {
-			Text(
-				modifier = Modifier.fillMaxSize(),
-				text = textFieldStyle.placeholder,
-				style = textFieldStyle.textStyle.copy(
-					color = textFieldStyle.placeholderColor
-				)
-			)
-		}
-		BasicTextField(
-			modifier = Modifier.fillMaxSize(),
-			value = value,
-			onValueChange = onValueChange,
-			keyboardOptions = textFieldStyle.keyboardOptions,
-			visualTransformation = combinedTransformations(
-				styledValue,
-				VisualTransformation.None,
-				UnorderedListTransformation(styleMapper)
-			),
-			textStyle = textFieldStyle.textStyle.copy(
-				textFieldStyle.textColor
-			),
-			cursorBrush = SolidColor(textFieldStyle.cursorColor)
-		)
-	}
+    Box(modifier = modifier) {
+        if (value.text.isEmpty()) {
+            Text(
+                modifier = Modifier.fillMaxSize(),
+                text = textFieldStyle.placeholder,
+                style = textFieldStyle.textStyle.copy(
+                    color = textFieldStyle.placeholderColor
+                )
+            )
+        }
+        BasicTextField(
+            modifier = Modifier.fillMaxSize(),
+            value = value,
+            onValueChange = onValueChange,
+            keyboardOptions = textFieldStyle.keyboardOptions,
+            visualTransformation = combinedTransformations(
+                styledValue,
+                VisualTransformation.None,
+                UnorderedListTransformation(styleMapper)
+            ),
+            textStyle = textFieldStyle.textStyle.copy(
+                textFieldStyle.textColor
+            ),
+            cursorBrush = SolidColor(textFieldStyle.cursorColor)
+        )
+    }
 }
 
 @Composable
 fun defaultRichTextFieldStyle() = RichTextFieldStyle(
-	keyboardOptions = KeyboardOptions(
-		capitalization = KeyboardCapitalization.Sentences,
-	),
-	placeholder = EMPTY_STRING,
-	textStyle = MaterialTheme.typography.body1,
-	textColor = MaterialTheme.colors.onPrimary,
-	placeholderColor = MaterialTheme.colors.secondaryVariant,
-	cursorColor = MaterialTheme.colors.secondary,
+    keyboardOptions = KeyboardOptions(
+        capitalization = KeyboardCapitalization.Sentences,
+    ),
+    placeholder = EMPTY_STRING,
+    textStyle = MaterialTheme.typography.body1,
+    textColor = MaterialTheme.colors.onPrimary,
+    placeholderColor = MaterialTheme.colors.secondaryVariant,
+    cursorColor = MaterialTheme.colors.secondary,
 )
 
 data class RichTextFieldStyle(
-	val keyboardOptions: KeyboardOptions,
-	val placeholder: String,
-	val textStyle: TextStyle,
-	val textColor: Color,
-	val placeholderColor: Color,
-	val cursorColor: Color
+    val keyboardOptions: KeyboardOptions,
+    val placeholder: String,
+    val textStyle: TextStyle,
+    val textColor: Color,
+    val placeholderColor: Color,
+    val cursorColor: Color
 )
