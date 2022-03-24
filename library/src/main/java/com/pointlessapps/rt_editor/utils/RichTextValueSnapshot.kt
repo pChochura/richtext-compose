@@ -1,16 +1,19 @@
 package com.pointlessapps.rt_editor.utils
 
+import android.os.Parcelable
 import com.pointlessapps.rt_editor.mappers.StyleMapper
+import kotlinx.parcelize.Parcelize
 
 /**
  * A helper class that lets you serialize the [RichTextValue]
  */
-class RichTextValueSnapshot(
+@Parcelize
+data class RichTextValueSnapshot(
     val text: String,
     val spanStyles: List<RichTextValueSpanSnapshot>,
     val paragraphStyles: List<RichTextValueSpanSnapshot>,
     val selectionPosition: Int,
-) {
+) : Parcelable {
 
     internal fun toAnnotatedStringBuilder(styleMapper: StyleMapper): AnnotatedStringBuilder {
         val spans = this.spanStyles.map {
@@ -30,16 +33,17 @@ class RichTextValueSnapshot(
         }
     }
 
+    @Parcelize
     data class RichTextValueSpanSnapshot(
         val start: Int,
         val end: Int,
-        val tag: String
-    )
+        val tag: String,
+    ) : Parcelable
 
     companion object {
         internal fun fromAnnotatedStringBuilder(
             annotatedStringBuilder: AnnotatedStringBuilder,
-            selectionPosition: Int
+            selectionPosition: Int,
         ) = RichTextValueSnapshot(
             text = annotatedStringBuilder.text,
             spanStyles = annotatedStringBuilder.spanStyles.map {

@@ -50,15 +50,15 @@ the `textFieldStyle`. Default ones are as follows:
 ```kotlin
 @Composable
 fun defaultRichTextFieldStyle() = RichTextFieldStyle(
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Sentences,
-        ),
-        placeholder = EMPTY_STRING,
-        textStyle = MaterialTheme.typography.body1,
-        textColor = MaterialTheme.colors.onPrimary,
-        placeholderColor = MaterialTheme.colors.secondaryVariant,
-        cursorColor = MaterialTheme.colors.secondary,
-    )
+     keyboardOptions = KeyboardOptions(
+         capitalization = KeyboardCapitalization.Sentences,
+     ),
+     placeholder = EMPTY_STRING,
+     textStyle = MaterialTheme.typography.body1,
+     textColor = MaterialTheme.colors.onPrimary,
+     placeholderColor = MaterialTheme.colors.secondaryVariant,
+     cursorColor = MaterialTheme.colors.secondary,
+ )
 ```
 
 To insert or clear styles you can use methods provided by the `RichTextValue` object:
@@ -184,19 +184,20 @@ extends `StyleMapper` and implement the styling there for the styles that you wo
 
 ```kotlin
 // If you want to create a paragraph style you have to extend `ParagraphStyle` interface!
+object CustomParagraphStyle : Style
 object CustomStyle : Style
-
 
 class CustomStyleMapper : StyleMapper() {
 
-    override fun fromTag(tag: String) =
+    override fun fromTag(tag: String): Style =
         runCatching { super.fromTag(tag) }.getOrNull() ?: when (tag) {
             // It is necessary to ensure undo/redo actions work correctly
             "${CustomStyle.javaClass.simpleName}/" -> CustomStyle
+            "${CustomParagraphStyle.javaClass.simpleName}/" -> CustomParagraphStyle
             else -> throw IllegalArgumentException()
         }
 
-    override fun toSpanStyle(style: Style) = super.toSpanStyle(style) ?: when (style) {
+    override fun toSpanStyle(style: Style): SpanStyle? = super.toSpanStyle(style) ?: when (style) {
         // Here we're customizing the behavior of the style
         is CustomStyle -> SpanStyle(
             color = Color.Red,
@@ -204,6 +205,15 @@ class CustomStyleMapper : StyleMapper() {
         )
         else -> null
     }
+
+    override fun toParagraphStyle(style: Style): ParagraphStyle? =
+        super.toParagraphStyle(style) ?: when (style) {
+            is CustomParagraphStyle -> ParagraphStyle(
+                textAlign = TextAlign.Justify,
+                textIndent = TextIndent(firstLine = 12.sp)
+            )
+            else -> null
+        }
 }
 ```
 
