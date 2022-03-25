@@ -46,12 +46,12 @@ internal fun RichTextField(
             onValueChange = onValueChange,
             keyboardOptions = textFieldStyle.keyboardOptions,
             visualTransformation = combinedTransformations(
-                styledValue,
+                styledValue = styledValue,
                 VisualTransformation.None,
                 UnorderedListTransformation(styleMapper)
             ),
             textStyle = textFieldStyle.textStyle.copy(
-                textFieldStyle.textColor
+                color = textFieldStyle.textColor
             ),
             cursorBrush = SolidColor(textFieldStyle.cursorColor)
         )

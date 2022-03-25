@@ -23,8 +23,10 @@ import androidx.core.graphics.ColorUtils
 import com.pointlessapps.rt_editor.mappers.StyleMapper
 import com.pointlessapps.rt_editor.model.RichTextValue
 import com.pointlessapps.rt_editor.model.Style
+import com.pointlessapps.rt_editor.ui.RichText
 import com.pointlessapps.rt_editor.ui.RichTextEditor
 import com.pointlessapps.rt_editor.ui.defaultRichTextFieldStyle
+import com.pointlessapps.rt_editor.ui.defaultRichTextStyle
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
@@ -45,18 +47,33 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                RichTextEditor(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    value = value,
-                    onValueChange = { value = it },
-                    textFieldStyle = defaultRichTextFieldStyle().copy(
-                        textColor = Color.Black,
-                        placeholderColor = Color.LightGray,
-                        placeholder = "My rich text editor in action"
+                Column(modifier = Modifier.fillMaxSize()) {
+                    RichTextEditor(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.5f)
+                            .padding(16.dp),
+                        value = value,
+                        onValueChange = { value = it },
+                        textFieldStyle = defaultRichTextFieldStyle().copy(
+                            textColor = Color.Black,
+                            placeholderColor = Color.LightGray,
+                            placeholder = "My rich text editor in action"
+                        )
                     )
-                )
+
+                    // If you want to display formatted text you can use [RichText] instead of [RichTextEditor]
+                    RichText(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.LightGray)
+                            .padding(16.dp),
+                        value = value,
+                        textStyle = defaultRichTextStyle().copy(
+                            textColor = Color.Black,
+                        )
+                    )
+                }
 
                 Box(
                     modifier = Modifier.fillMaxSize(),
