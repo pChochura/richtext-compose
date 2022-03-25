@@ -14,7 +14,6 @@ So the only solution was to create my own library.
 
 ```groovy
 repositories {
-    ...
     maven { url 'https://jitpack.io' }
 }
 ```
@@ -41,6 +40,15 @@ RichTextEditor(
         textColor = MaterialTheme.colors.onPrimary,
         placeholderColor = MaterialTheme.colors.secondaryVariant,
     )
+)
+
+// If you want to render static text use `RichText` instead
+RichText(
+   modifier = Modifier,
+   value = value,
+   textStyle = defaultRichTextStyle().copy(
+      textColor = MaterialTheme.colors.onPrimary,
+   )
 )
 ```
 
