@@ -108,7 +108,7 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
 
     private fun updateHistoryIfNecessary() {
         currentSnapshot?.run {
-            // Add a snapshot when the style is added, but not enough text was changed to be saved
+            // Add a snapshot manually when not enough text was changed to be saved
             if (text != annotatedStringBuilder.text) {
                 updateHistory()
             }
@@ -359,6 +359,7 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
     }
 
     override fun getLastSnapshot(): RichTextValueSnapshot {
+        updateHistoryIfNecessary()
         val snapshot = currentSnapshot
         if (snapshot != null) {
             return snapshot
