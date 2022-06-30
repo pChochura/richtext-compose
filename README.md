@@ -8,6 +8,13 @@ Javascript under the hood. I wanted something compatible with Jetpack Compose.
 
 So the only solution was to create my own library.
 
+# Table of contents
+ - [Installation](#installation)
+ - [Usage](#usage)
+    - [Available Styles](#available-styles)
+    - [Custom styling](#custom-styling)
+    - [Serialization](#serialization)
+
 # Installation
 
 1. Add a link to the Jitpack repository
@@ -236,4 +243,28 @@ var value by remember {
         )
     )
 }
+```
+
+## Serialization
+
+If you want to save the contents of the `RichTextValue` you can use `RichTextValueSnapshot` as described below:
+
+```kotlin
+var value by remember { mutableStateOf(RichTextValue.get()) }
+RichTextEditor(
+    value = value,
+    onValueChange = { value = it },
+)
+
+// Get the last snapshot of the content
+val snapshot: RichTextValueSnapshot = value.getLastSnapshot()
+
+// Here you can save the snapshot to the database
+
+// Get the content value back. It will be rendered the same way as with the initial value
+var contentFromSnapshot by remember { mutableStateOf(RichTextValue.fromSnapshot(snapshot)) }
+RichTextEditor(
+    value = contentFromSnapshot,
+    onValueChange = { contentFromSnapshot = it },
+)
 ```
