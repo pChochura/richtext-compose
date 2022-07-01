@@ -49,7 +49,7 @@ RichTextEditor(
     )
 )
 
-// If you want to render static text use `RichText` instead
+// If you want to render a static text use `RichText` instead
 RichText(
    modifier = Modifier,
    value = value,

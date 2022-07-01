@@ -27,7 +27,7 @@ open class StyleMapper {
         return when {
             tag.startsWith("${Style.TextColor::class.simpleName}/") -> {
                 val value = tag.substringAfter("${Style.TextColor::class.simpleName}/")
-                Style.TextColor(Color(value.toULongOrNull() ?: 0UL))
+                Style.TextColor(Color(value.toLongOrNull() ?: 0L))
             }
             tag.startsWith("${Style.TextSize::class.simpleName}/") -> {
                 val value = tag.substringAfter("${Style.TextSize::class.simpleName}/")

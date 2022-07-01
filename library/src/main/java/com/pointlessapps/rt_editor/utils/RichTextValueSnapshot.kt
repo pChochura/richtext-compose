@@ -9,10 +9,10 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class RichTextValueSnapshot(
-    val text: String,
-    val spanStyles: List<RichTextValueSpanSnapshot>,
-    val paragraphStyles: List<RichTextValueSpanSnapshot>,
-    val selectionPosition: Int,
+    val text: String = "",
+    val spanStyles: List<RichTextValueSpanSnapshot> = emptyList(),
+    val paragraphStyles: List<RichTextValueSpanSnapshot> = emptyList(),
+    val selectionPosition: Int = -1,
 ) : Parcelable {
 
     internal fun toAnnotatedStringBuilder(styleMapper: StyleMapper): AnnotatedStringBuilder {
@@ -28,8 +28,8 @@ data class RichTextValueSnapshot(
 
         return AnnotatedStringBuilder().apply {
             text = this@RichTextValueSnapshot.text
-            addSpans(*spans.toTypedArray())
-            addParagraphs(*paragraphs.toTypedArray())
+            addSpans(spans)
+            addParagraphs(paragraphs)
         }
     }
 

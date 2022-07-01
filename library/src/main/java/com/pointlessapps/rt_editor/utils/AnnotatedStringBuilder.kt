@@ -26,24 +26,33 @@ internal class AnnotatedStringBuilder {
     internal val paragraphStyles: List<MutableRange<ParagraphStyle>>
         get() = _paragraphStyles
 
-    fun addSpans(vararg spanStyle: MutableRange<SpanStyle>) {
-        _spanStyles.addAll(spanStyle)
+    fun addSpan(spanStyle: MutableRange<SpanStyle>) {
+        _spanStyles.add(spanStyle)
         collapseStyles(_spanStyles)
     }
 
-    fun addParagraphs(vararg paragraphStyle: MutableRange<ParagraphStyle>) {
-        _paragraphStyles.addAll(paragraphStyle)
+    fun addSpans(spanStyles: List<MutableRange<SpanStyle>>) {
+        _spanStyles.addAll(spanStyles)
+        collapseStyles(_spanStyles)
     }
 
-    fun removeSpans(vararg spanStyle: MutableRange<SpanStyle>) {
+    fun addParagraph(paragraphStyle: MutableRange<ParagraphStyle>) {
+        _paragraphStyles.add(paragraphStyle)
+    }
+
+    fun addParagraphs(paragraphStyles: List<MutableRange<ParagraphStyle>>) {
+        _paragraphStyles.addAll(paragraphStyles)
+    }
+
+    fun removeSpans(spanStyles: List<MutableRange<SpanStyle>>) {
         _spanStyles.removeAll {
-            spanStyle.any { span -> span.equalsStructurally(it) }
+            spanStyles.any { span -> span.equalsStructurally(it) }
         }
     }
 
-    fun removeParagraphs(vararg paragraphStyle: MutableRange<ParagraphStyle>) {
+    fun removeParagraphs(paragraphStyles: List<MutableRange<ParagraphStyle>>) {
         _paragraphStyles.removeAll {
-            paragraphStyle.any { paragraph -> paragraph.equalsStructurally(it) }
+            paragraphStyles.any { paragraph -> paragraph.equalsStructurally(it) }
         }
     }
 

@@ -184,11 +184,11 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
         if (changedStyles) {
             updateHistoryIfNecessary()
 
-            annotatedStringBuilder.addSpans(*spansToAdd.toTypedArray())
-            annotatedStringBuilder.removeSpans(*spansToRemove.toTypedArray())
+            annotatedStringBuilder.addSpans(spansToAdd)
+            annotatedStringBuilder.removeSpans(spansToRemove)
 
             if (paragraphsToRemove.isNotEmpty()) {
-                annotatedStringBuilder.removeParagraphs(*paragraphsToRemove.toTypedArray())
+                annotatedStringBuilder.removeParagraphs(paragraphsToRemove)
             }
 
             updateHistory()
@@ -234,8 +234,8 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
             )
         }
 
-        spanStyle?.let { annotatedStringBuilder.addSpans(it) }
-        paragraphStyle?.let { annotatedStringBuilder.addParagraphs(it) }
+        spanStyle?.let { annotatedStringBuilder.addSpan(it) }
+        paragraphStyle?.let { annotatedStringBuilder.addParagraph(it) }
 
         updateHistory()
 
@@ -251,8 +251,8 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
         val paragraphStylesByType = filterCurrentStyles(annotatedStringBuilder.paragraphStyles)
             .filter { it.tag.startsWith(tags) }
 
-        annotatedStringBuilder.removeSpans(*spanStylesByType.toTypedArray())
-        annotatedStringBuilder.removeParagraphs(*paragraphStylesByType.toTypedArray())
+        annotatedStringBuilder.removeSpans(spanStylesByType)
+        annotatedStringBuilder.removeParagraphs(paragraphStylesByType)
 
         return this
     }
