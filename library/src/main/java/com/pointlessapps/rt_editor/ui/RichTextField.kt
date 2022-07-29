@@ -15,20 +15,16 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import com.pointlessapps.rt_editor.mappers.StyleMapper
 import com.pointlessapps.rt_editor.transformations.UnorderedListTransformation
 import com.pointlessapps.rt_editor.transformations.combinedTransformations
-
-private const val EMPTY_STRING = ""
 
 @Composable
 internal fun RichTextField(
     value: TextFieldValue,
     styledValue: AnnotatedString,
-    styleMapper: StyleMapper,
-    onValueChange: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier,
-    textFieldStyle: RichTextFieldStyle = defaultRichTextFieldStyle()
+    textFieldStyle: RichTextFieldStyle = defaultRichTextFieldStyle(),
+    onValueChange: (TextFieldValue) -> Unit,
 ) {
     Box(modifier = modifier) {
         if (value.text.isEmpty()) {
@@ -48,7 +44,7 @@ internal fun RichTextField(
             visualTransformation = combinedTransformations(
                 styledValue = styledValue,
                 VisualTransformation.None,
-                UnorderedListTransformation(styleMapper)
+                UnorderedListTransformation()
             ),
             textStyle = textFieldStyle.textStyle.copy(
                 color = textFieldStyle.textColor
@@ -63,7 +59,7 @@ fun defaultRichTextFieldStyle() = RichTextFieldStyle(
     keyboardOptions = KeyboardOptions(
         capitalization = KeyboardCapitalization.Sentences,
     ),
-    placeholder = EMPTY_STRING,
+    placeholder = "",
     textStyle = MaterialTheme.typography.body1,
     textColor = MaterialTheme.colors.onPrimary,
     placeholderColor = MaterialTheme.colors.secondaryVariant,

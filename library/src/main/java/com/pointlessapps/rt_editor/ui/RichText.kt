@@ -22,7 +22,7 @@ fun RichText(
         text = combinedTransformations(
             styledValue = value.styledValue,
             VisualTransformation.None,
-            UnorderedListTransformation(value.styleMapper)
+            UnorderedListTransformation()
         ).filter(value.styledValue).text,
         style = textStyle.textStyle.copy(
             color = textStyle.textColor,

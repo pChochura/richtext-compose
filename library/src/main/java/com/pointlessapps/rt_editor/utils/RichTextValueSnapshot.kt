@@ -1,30 +1,32 @@
 package com.pointlessapps.rt_editor.utils
 
-import android.os.Parcelable
-import com.pointlessapps.rt_editor.mappers.StyleMapper
-import kotlinx.parcelize.Parcelize
+import com.pointlessapps.rt_editor.model.Style
+import com.pointlessapps.rt_editor.model.paragraphStyle
+import com.pointlessapps.rt_editor.model.spanStyle
+import com.pointlessapps.rt_editor.model.toStyle
+import kotlinx.serialization.Serializable
 
 /**
  * A helper class that lets you serialize the [RichTextValue]
  */
-@Parcelize
+@Serializable
 data class RichTextValueSnapshot(
     val text: String = "",
     val spanStyles: List<RichTextValueSpanSnapshot> = emptyList(),
     val paragraphStyles: List<RichTextValueSpanSnapshot> = emptyList(),
     val selectionPosition: Int = -1,
-) : Parcelable {
+) {
 
-    internal fun toAnnotatedStringBuilder(styleMapper: StyleMapper): AnnotatedStringBuilder {
-        val spans = this.spanStyles.map {
-            val item = styleMapper.toSpanStyle(styleMapper.fromTag(it.tag)) ?: return@map null
+    internal fun toAnnotatedStringBuilder(styleMapper: Map<String, (String) -> Style>): AnnotatedStringBuilder {
+        val spans = this.spanStyles.mapNotNull {
+            val item = it.tag.toStyle(styleMapper).spanStyle ?: return@mapNotNull null
             AnnotatedStringBuilder.MutableRange(item, it.start, it.end, it.tag)
-        }.filterNotNull()
+        }
 
-        val paragraphs = this.paragraphStyles.map {
-            val item = styleMapper.toParagraphStyle(styleMapper.fromTag(it.tag)) ?: return@map null
+        val paragraphs = this.paragraphStyles.mapNotNull {
+            val item = it.tag.toStyle(styleMapper).paragraphStyle ?: return@mapNotNull null
             AnnotatedStringBuilder.MutableRange(item, it.start, it.end, it.tag)
-        }.filterNotNull()
+        }
 
         return AnnotatedStringBuilder().apply {
             text = this@RichTextValueSnapshot.text
@@ -33,12 +35,12 @@ data class RichTextValueSnapshot(
         }
     }
 
-    @Parcelize
+    @Serializable
     data class RichTextValueSpanSnapshot(
         val start: Int,
         val end: Int,
         val tag: String,
-    ) : Parcelable
+    )
 
     companion object {
         internal fun fromAnnotatedStringBuilder(

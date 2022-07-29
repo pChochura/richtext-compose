@@ -20,7 +20,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
-import com.pointlessapps.rt_editor.mappers.StyleMapper
 import com.pointlessapps.rt_editor.model.RichTextValue
 import com.pointlessapps.rt_editor.model.Style
 import com.pointlessapps.rt_editor.ui.RichText
@@ -42,7 +41,7 @@ class MainActivity : ComponentActivity() {
                             // Optional parameter; leave it blank if you want to use provided styles
                             // But if you want to customize the user experience you're free to do that
                             // by providing a custom StyleMapper
-                            styleMapper = CustomStyleMapper()
+                            styleMapper = MY_STYLE_MAPPER
                         )
                     )
                 }
@@ -173,7 +172,7 @@ class MainActivity : ComponentActivity() {
                                 .isNotEmpty()
                         ) {
                             // Remove all styles in selected region that changes the text color
-                            value = value.clearStyles(Style.TextColor())
+                            value = value.clearStyles(Style.TextColor(Color.Transparent))
 
                             // Here you would show a dialog of some sorts and allow user to pick
                             // a specific color. I'm gonna use a random one
@@ -224,21 +223,14 @@ class MainActivity : ComponentActivity() {
     )
 }
 
-object BoldRedStyle : Style
+object BoldRedStyle : Style.TextStyle {
+    override val spanStyle = SpanStyle(
+        color = Color.Red,
+        fontWeight = FontWeight.Bold,
+    )
+    override val tag = "BoldRedStyle"
+}
 
-class CustomStyleMapper : StyleMapper() {
-
-    override fun fromTag(tag: String) =
-        runCatching { super.fromTag(tag) }.getOrNull() ?: when (tag) {
-            "${BoldRedStyle.javaClass.simpleName}/" -> BoldRedStyle
-            else -> throw IllegalArgumentException()
-        }
-
-    override fun toSpanStyle(style: Style) = super.toSpanStyle(style) ?: when (style) {
-        is BoldRedStyle -> SpanStyle(
-            color = Color.Red,
-            fontWeight = FontWeight.Bold,
-        )
-        else -> null
-    }
+val MY_STYLE_MAPPER = Style.DEFAULT_MAPPER.toMutableMap().apply {
+    put(BoldRedStyle.tag) { BoldRedStyle }
 }
