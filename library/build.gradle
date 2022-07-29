@@ -30,5 +30,4 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.foundation:foundation:$compose_version"
-//    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 }
