@@ -28,7 +28,7 @@ abstract class RichTextValue {
      */
     abstract fun getLastSnapshot(): RichTextValueSnapshot
 
-    internal abstract fun updatedValueAndStyles(value: TextFieldValue): Boolean
+    abstract fun updatedValueAndStyles(value: TextFieldValue): Boolean
     internal abstract fun copy(): RichTextValue
 
     override fun toString() = this.value.toString()
