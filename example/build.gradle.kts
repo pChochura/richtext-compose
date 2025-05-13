@@ -3,16 +3,17 @@ val composeVersion = extra["compose.version"] as String
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
 }
 
 android {
-    namespace = "com.pointlessapps.rt_editor"
-    compileSdk = 33
+    namespace = "com.pointlessapps.example"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.pointlessapps.rt_editor"
+        applicationId = "com.pointlessapps.example"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 

@@ -4,14 +4,18 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.20"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
 }
 
 android {
-    compileSdk = 33
+    namespace = "com.pointlessapps.rt_editor"
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 33
+        testOptions {
+            targetSdk = 35
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
