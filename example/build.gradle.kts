@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    namespace = "com.pointlessapps.rt_editor"
     compileSdk = 33
 
     defaultConfig {
