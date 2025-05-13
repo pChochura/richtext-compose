@@ -3,14 +3,13 @@ package com.pointlessapps.rt_editor.model
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import com.pointlessapps.rt_editor.mappers.StyleMapper
 import com.pointlessapps.rt_editor.utils.*
 import kotlin.math.max
 import kotlin.math.min
 
 internal typealias StyleRange<T> = AnnotatedStringBuilder.MutableRange<T>
 
-internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTextValue() {
+internal class RichTextValueImpl(private val styleMapper: Map<String, (String) -> Style>) : RichTextValue() {
 
     private val annotatedStringBuilder = AnnotatedStringBuilder()
     private var selection: TextRange = TextRange.Zero
@@ -49,9 +48,9 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
 
     override val currentStyles: Set<Style>
         get() = filterCurrentStyles(annotatedStringBuilder.spanStyles)
-            .map { styleMapper.fromTag(it.tag) }.toSet() +
+            .map { it.tag.toStyle(styleMapper) }.toSet() +
                 filterCurrentStyles(annotatedStringBuilder.paragraphStyles)
-                    .map { styleMapper.fromTag(it.tag) }.toSet()
+                    .map { it.tag.toStyle(styleMapper) }.toSet()
 
     private fun clearRedoStack() {
         // If offset in the history is not 0 clear possible "redo" states
@@ -97,11 +96,11 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
 
     private fun getCurrentSpanStyles(style: Style?) =
         filterCurrentStyles(annotatedStringBuilder.spanStyles)
-            .filter { style == null || it.tag == styleMapper.toTag(style) }
+            .filter { style == null || it.tag == style.tag }
 
     private fun getCurrentParagraphStyles(style: Style?) =
         filterCurrentStyles(annotatedStringBuilder.paragraphStyles)
-            .filter { style == null || it.tag == styleMapper.toTag(style) }
+            .filter { style == null || it.tag == style.tag }
 
     private fun <T> removeStyleFromSelection(
         styles: List<StyleRange<T>>,
@@ -193,10 +192,7 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
 
             updateHistory()
 
-            if (paragraphsToRemove.isEmpty() || paragraphsToRemove.any {
-                    it.tag == styleMapper.toTag(style)
-                }
-            ) {
+            if (paragraphsToRemove.isEmpty() || paragraphsToRemove.any { it.tag == style.tag }) {
                 return this
             }
         } else if (style == Style.ClearFormat || (composition == null && selection.collapsed)) {
@@ -205,20 +201,18 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
 
         updateHistoryIfNecessary()
 
-        val spanStyle = styleMapper.toSpanStyle(style)?.let {
+        val spanStyle = style.spanStyle?.let {
             StyleRange(
                 item = it,
                 start = currentSelection.start,
                 end = currentSelection.end,
-                tag = styleMapper.toTag(style)
+                tag = style.tag
             )
         }
 
-        val paragraphStyle = styleMapper.toParagraphStyle(style)?.let {
-            var startOfTheParagraph = currentSelection.start
-                .coerceStartOfParagraph(annotatedStringBuilder.text)
-            var endOfTheParagraph = currentSelection.end
-                .coerceEndOfParagraph(annotatedStringBuilder.text)
+        val paragraphStyle = style.paragraphStyle?.let {
+            var startOfTheParagraph = currentSelection.start.coerceStartOfParagraph(annotatedStringBuilder.text)
+            var endOfTheParagraph = currentSelection.end.coerceEndOfParagraph(annotatedStringBuilder.text)
 
             val removedParagraph = paragraphsToRemove.singleOrNull()
             if (removedParagraph != null) {
@@ -230,7 +224,7 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
                 item = it,
                 start = startOfTheParagraph,
                 end = endOfTheParagraph,
-                tag = styleMapper.toTag(style)
+                tag = style.tag,
             )
         }
 
@@ -245,7 +239,7 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
     override fun insertStyle(style: Style) = this.copy().insertStyleInternal(style)
 
     private fun clearStylesInternal(vararg styles: Style): RichTextValue {
-        val tags = styles.map { styleMapper.toTag(it, simple = true) }.toSet()
+        val tags = styles.map { it.tag }.toSet()
         val spanStylesByType = filterCurrentStyles(annotatedStringBuilder.spanStyles)
             .filter { it.tag.startsWith(tags) }
         val paragraphStylesByType = filterCurrentStyles(annotatedStringBuilder.paragraphStyles)
@@ -315,13 +309,10 @@ internal class RichTextValueImpl(override val styleMapper: StyleMapper) : RichTe
 
     override fun getLastSnapshot(): RichTextValueSnapshot {
         updateHistoryIfNecessary()
-        val snapshot = currentSnapshot
-        if (snapshot != null) {
-            return snapshot
+        return currentSnapshot ?: run {
+            updateHistory()
+            requireNotNull(currentSnapshot)
         }
-
-        updateHistory()
-        return requireNotNull(currentSnapshot)
     }
 
     override fun copy() = RichTextValueImpl(styleMapper).apply {

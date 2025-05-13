@@ -16,37 +16,29 @@ internal fun AnnotatedString.copy(
 )
 
 internal fun Int.coerceStartOfParagraph(text: String): Int {
-    val previousNewLineCharacterIndex = text.substring(0, this)
-        .lastIndexOf(System.lineSeparator())
-
-    if (previousNewLineCharacterIndex == -1) {
-        return 0
+    return when (val previousNewLineCharacterIndex = text.substring(0, this).lastIndexOf(lineSeparator())) {
+        -1 -> 0
+        else -> previousNewLineCharacterIndex + lineSeparator().length
     }
-
-    return previousNewLineCharacterIndex + System.lineSeparator().length
 }
 
 internal fun Int.coerceEndOfParagraph(text: String): Int {
-    val nextNewLineCharacterIndex = text.substring(this)
-        .indexOf(System.lineSeparator())
-
-    if (nextNewLineCharacterIndex == -1) {
-        return text.length
+    return when (val nextNewLineCharacterIndex = text.substring(this).indexOf(lineSeparator())) {
+        -1 -> text.length
+        else -> this + nextNewLineCharacterIndex + 1
     }
-
-    return this + nextNewLineCharacterIndex + 1
 }
 
-internal fun TextRange.coerceParagraph(text: String) = TextRange(
+internal fun TextRange.coerceParagraph(text: String): TextRange = TextRange(
     start = start.coerceStartOfParagraph(text),
-    end = end.coerceEndOfParagraph(text)
+    end = end.coerceEndOfParagraph(text),
 )
 
-internal fun TextRange.coerceNotReversed() = if (start < end) {
+internal fun TextRange.coerceNotReversed(): TextRange = if (start <= end) {
     this
 } else {
     TextRange(end, start)
 }
 
-internal fun String.startsWith(prefixes: Set<String>) =
+internal fun String.startsWith(prefixes: Iterable<String>): Boolean =
     prefixes.any { this.startsWith(it) }

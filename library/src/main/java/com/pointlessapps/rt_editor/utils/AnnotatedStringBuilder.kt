@@ -1,7 +1,6 @@
 package com.pointlessapps.rt_editor.utils
 
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.AnnotatedString.Range
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
@@ -89,7 +88,7 @@ internal class AnnotatedStringBuilder {
                     currentValue.substring(
                         currentEndingParagraph.start,
                         currentEndingParagraph.end + 1
-                    ).endsWith(System.lineSeparator().repeat(2)) -> {
+                    ).endsWith(lineSeparator().repeat(2)) -> {
                 currentEndingParagraph.end -= 1
 
                 onEscapeParagraphCallback(
@@ -187,8 +186,7 @@ internal class AnnotatedStringBuilder {
                 return@forEachIndexed
             }
 
-            if (startRangeMap.containsKey(range.end)) {
-                val otherRangeIndex = requireNotNull(startRangeMap[range.end])
+            startRangeMap[range.end]?.let { otherRangeIndex ->
                 if (styles[otherRangeIndex].tag == range.tag) {
                     end = styles[otherRangeIndex].end
 
@@ -199,8 +197,7 @@ internal class AnnotatedStringBuilder {
                 }
             }
 
-            if (endRangeMap.containsKey(range.start)) {
-                val otherRangeIndex = requireNotNull(endRangeMap[range.start])
+            endRangeMap[range.start]?.let { otherRangeIndex ->
                 if (styles[otherRangeIndex].tag == range.tag) {
                     start = styles[otherRangeIndex].start
 
@@ -260,14 +257,14 @@ internal class AnnotatedStringBuilder {
         var end: Int,
         val tag: String
     ) {
-        fun toRange() = Range(item = item, start = start, end = end, tag = tag)
+        fun toRange() = AnnotatedString.Range(item = item, start = start, end = end, tag = tag)
 
         fun equalsStructurally(other: MutableRange<T>) =
             item == other.item && tag == other.tag &&
                     start == other.start && end == other.end
 
         companion object {
-            fun <T> fromRange(range: Range<T>) = MutableRange(
+            fun <T> fromRange(range: AnnotatedString.Range<T>) = MutableRange(
                 item = range.item,
                 start = range.start,
                 end = range.end,

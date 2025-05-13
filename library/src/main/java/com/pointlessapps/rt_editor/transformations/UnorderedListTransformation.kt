@@ -4,11 +4,11 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
-import com.pointlessapps.rt_editor.mappers.StyleMapper
 import com.pointlessapps.rt_editor.model.Style
 import com.pointlessapps.rt_editor.utils.AnnotatedStringBuilder
+import com.pointlessapps.rt_editor.utils.lineSeparator
 
-class UnorderedListTransformation(private val styleMapper: StyleMapper) : VisualTransformation {
+class UnorderedListTransformation : VisualTransformation {
 
     companion object {
         const val DOT_CHARACTER = "\t• "
@@ -22,14 +22,14 @@ class UnorderedListTransformation(private val styleMapper: StyleMapper) : Visual
         }
 
         outputParagraphs.filter {
-            it.tag == styleMapper.toTag(Style.UnorderedList)
+            it.tag == Style.UnorderedList.tag
         }.forEach { style ->
             val subtext = outputText.substring(style.start, style.end)
-            val lines = subtext.split(System.lineSeparator()).map {
+            val lines = subtext.split(lineSeparator()).map {
                 "$DOT_CHARACTER$it"
             }
             outputText = outputText.substring(0, style.start - 1) +
-                    lines.joinToString(System.lineSeparator()) +
+                    lines.joinToString(lineSeparator()) +
                     outputText.substring(style.end)
 
             style.end += lines.size * DOT_CHARACTER.length
