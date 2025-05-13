@@ -192,10 +192,7 @@ internal class RichTextValueImpl(private val styleMapper: Map<String, (String) -
 
             updateHistory()
 
-            if (paragraphsToRemove.isEmpty() || paragraphsToRemove.any {
-                    it.tag == style.tag
-                }
-            ) {
+            if (paragraphsToRemove.isEmpty() || paragraphsToRemove.any { it.tag == style.tag }) {
                 return this
             }
         } else if (style == Style.ClearFormat || (composition == null && selection.collapsed)) {

@@ -7,19 +7,20 @@ import com.pointlessapps.rt_editor.model.RichTextValue
 @Composable
 fun RichTextEditor(
     value: RichTextValue,
+    onValueChange: (RichTextValue) -> Unit,
     modifier: Modifier = Modifier,
     textFieldStyle: RichTextFieldStyle = defaultRichTextFieldStyle(),
-    onValueChange: (RichTextValue) -> Unit,
 ) {
     RichTextField(
-        value = value.value,
-        styledValue = value.styledValue,
         modifier = modifier,
-        textFieldStyle = textFieldStyle
-    ) {
-        val newValue = value.copy()
-        if (newValue.updatedValueAndStyles(it)) {
-            onValueChange(newValue)
-        }
-    }
+        value = value.value,
+        onValueChange = {
+            val newValue = value.copy()
+            if (newValue.updatedValueAndStyles(it)) {
+                onValueChange(newValue)
+            }
+        },
+        styledValue = value.styledValue,
+        textFieldStyle = textFieldStyle,
+    )
 }

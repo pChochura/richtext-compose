@@ -31,7 +31,7 @@ internal fun Int.coerceEndOfParagraph(text: String): Int {
 
 internal fun TextRange.coerceParagraph(text: String): TextRange = TextRange(
     start = start.coerceStartOfParagraph(text),
-    end = end.coerceEndOfParagraph(text)
+    end = end.coerceEndOfParagraph(text),
 )
 
 internal fun TextRange.coerceNotReversed(): TextRange = if (start <= end) {

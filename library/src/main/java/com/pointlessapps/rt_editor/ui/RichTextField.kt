@@ -21,10 +21,10 @@ import com.pointlessapps.rt_editor.transformations.combinedTransformations
 @Composable
 internal fun RichTextField(
     value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     styledValue: AnnotatedString,
     modifier: Modifier = Modifier,
     textFieldStyle: RichTextFieldStyle = defaultRichTextFieldStyle(),
-    onValueChange: (TextFieldValue) -> Unit,
 ) {
     Box(modifier = modifier) {
         if (value.text.isEmpty()) {
@@ -32,8 +32,8 @@ internal fun RichTextField(
                 modifier = Modifier.fillMaxSize(),
                 text = textFieldStyle.placeholder,
                 style = textFieldStyle.textStyle.copy(
-                    color = textFieldStyle.placeholderColor
-                )
+                    color = textFieldStyle.placeholderColor,
+                ),
             )
         }
         BasicTextField(
@@ -44,12 +44,12 @@ internal fun RichTextField(
             visualTransformation = combinedTransformations(
                 styledValue = styledValue,
                 VisualTransformation.None,
-                UnorderedListTransformation()
+                UnorderedListTransformation(),
             ),
             textStyle = textFieldStyle.textStyle.copy(
-                color = textFieldStyle.textColor
+                color = textFieldStyle.textColor,
             ),
-            cursorBrush = SolidColor(textFieldStyle.cursorColor)
+            cursorBrush = SolidColor(textFieldStyle.cursorColor),
         )
     }
 }

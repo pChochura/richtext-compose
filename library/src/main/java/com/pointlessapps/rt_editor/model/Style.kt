@@ -1,7 +1,6 @@
 package com.pointlessapps.rt_editor.model
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -10,6 +9,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
+import androidx.compose.ui.text.ParagraphStyle as ComposeParagraphStyle
 
 interface Style {
 
@@ -24,31 +24,31 @@ interface Style {
     }
 
     interface ParagraphStyle : Style {
-        val paragraphStyle: androidx.compose.ui.text.ParagraphStyle
+        val paragraphStyle: ComposeParagraphStyle
     }
 
     object OrderedList : ParagraphStyle {
-        override val paragraphStyle: androidx.compose.ui.text.ParagraphStyle get() = TODO("Not yet implemented")
+        override val paragraphStyle: ComposeParagraphStyle get() = TODO("Not yet implemented")
         override val tag = "OrderedList"
     }
 
     object UnorderedList : ParagraphStyle {
-        override val paragraphStyle: androidx.compose.ui.text.ParagraphStyle get() = TODO("Not yet implemented")
+        override val paragraphStyle: ComposeParagraphStyle get() = TODO("Not yet implemented")
         override val tag = "UnorderedList"
     }
 
     object AlignLeft : ParagraphStyle {
-        override val paragraphStyle = ParagraphStyle(textAlign = TextAlign.Left)
+        override val paragraphStyle = ComposeParagraphStyle(textAlign = TextAlign.Left)
         override val tag = "AlignLeft"
     }
 
     object AlignCenter : ParagraphStyle {
-        override val paragraphStyle = ParagraphStyle(textAlign = TextAlign.Center)
+        override val paragraphStyle = ComposeParagraphStyle(textAlign = TextAlign.Center)
         override val tag = "AlignCenter"
     }
 
     object AlignRight : ParagraphStyle {
-        override val paragraphStyle = ParagraphStyle(textAlign = TextAlign.Right)
+        override val paragraphStyle = ComposeParagraphStyle(textAlign = TextAlign.Right)
         override val tag = "AlignRight"
     }
 
@@ -118,7 +118,7 @@ interface Style {
 }
 
 val Style.spanStyle: SpanStyle? get() = (this as? Style.TextStyle)?.spanStyle
-val Style.paragraphStyle: ParagraphStyle? get() = (this as? Style.ParagraphStyle)?.paragraphStyle
+val Style.paragraphStyle: ComposeParagraphStyle? get() = (this as? Style.ParagraphStyle)?.paragraphStyle
 
 fun String.toStyle(styleMapper: Map<String, (String) -> Style>): Style {
     val items = split('/')
